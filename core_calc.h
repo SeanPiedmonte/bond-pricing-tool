@@ -16,11 +16,12 @@
  *  - ytm: Yield to Maturity / Annual Yield
  */
 typedef struct {
-    long int pval;
-    int c_rate;
+    double pval;
+    double c_rate;
     int c_freq;
     int ttm;
     int ytm;
 } Bond;
 
-int pcp(const Bond *bond);
+// Calculates the periodic coupon payment using our Bond as an input
+long long pcp(const Bond *bond);
