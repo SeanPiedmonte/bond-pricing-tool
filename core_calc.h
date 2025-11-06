@@ -16,8 +16,8 @@
  *  - ytm: Yield to Maturity / Annual Yield
  */
 typedef struct {
-    double pval;
-    double c_rate;
+    long int pval;
+    int c_rate;
     int c_freq;
     int ttm;
     int ytm;
