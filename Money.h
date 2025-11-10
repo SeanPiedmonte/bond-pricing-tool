@@ -1,3 +1,6 @@
+#ifndef STUDENT_H
+#define STUDENT_H
+
 #include <exception>
 #include <iostream>
 #include <string>
@@ -14,8 +17,20 @@ class Money {
         Money(const Money &&other);
         Money(long long _units);
         ~Money();
+        
+        void mult_per(double per);
+        void div_per(double per);
+        void set_units(long long units);
+        long long get_units();
 
         Money& operator=(const Money &other) {
+            if (&other != this) {
+                units = other.units;
+            }
+            return *this;
+        }
+
+        Money& operator=(const Money &&other) {
             if (&other != this) {
                 units = other.units;
             }
@@ -90,6 +105,7 @@ class Money {
             return result;
         }
         
-        
-        friend std::ostream& operator<<(std::ostream& os, const Money& money); 
+        friend std::ostream& operator<<(std::ostream& os, const Money& money);
 };
+
+#endif

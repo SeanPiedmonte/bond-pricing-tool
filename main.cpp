@@ -2,7 +2,7 @@
 #include <cassert>
 #include <vector>
 #include "core_calc.h"
-
+#include "Money.h"
   
 int main(int argc, char *argv[]) {
     if (argc != 6) {
@@ -22,6 +22,6 @@ int main(int argc, char *argv[]) {
         std::cerr << "Invalid Number in arguments" << std::endl;
     }
     
-    long long money = pcp(&bond);
+    Money money = pcp(&bond);
     std::cout << money << std::endl;
 }

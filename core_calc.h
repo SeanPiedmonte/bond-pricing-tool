@@ -4,6 +4,7 @@
 * This header handles the core computational functionality for our bond
 * calculator.
 */
+#include "Money.h"
 
 /*
  * name: Bond
@@ -24,4 +25,4 @@ typedef struct {
 } Bond;
 
 // Calculates the periodic coupon payment using our Bond as an input
-long long pcp(const Bond *bond);
+Money pcp(const Bond *bond);
