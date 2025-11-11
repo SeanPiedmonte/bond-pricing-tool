@@ -21,8 +21,10 @@ typedef struct {
     double c_rate;
     int c_freq;
     int ttm;
-    int ytm;
+    double ytm;
 } Bond;
 
 // Calculates the periodic coupon payment using our Bond as an input
 Money pcp(const Bond *bond);
+
+double flat_curve_dr(const Bond *bond);
