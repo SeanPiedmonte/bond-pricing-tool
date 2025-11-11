@@ -96,12 +96,19 @@ class Money {
                 return result;
             }
             
-            while (other.units <= units) {
+            while (other.units <= rem) {
+                std::cout << other.units << ", " << rem << std::endl;
                 rem -= other.units;
                 quo++;
             }
 
             result.units = quo;
+            return result;
+        }
+        
+        Money operator/(const int divisor) const {
+            Money result(0);
+            result.units = units / divisor;
             return result;
         }
         

@@ -5,5 +5,5 @@
 Money pcp(const Bond *bond) {
     Money result(bond->pval);
     result.mult_per(bond->c_rate);
-    return result;
+    return result / bond->c_freq;
 }
