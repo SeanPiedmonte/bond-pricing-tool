@@ -19,7 +19,7 @@ Money::~Money() {
 }
 
 void Money::mult_per(double per) {
-    units = units * per;
+    units = units * (per/100.0);
 }
 
 void Money::div_per(double per) {
