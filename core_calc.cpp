@@ -9,6 +9,17 @@ Money pcp(const Bond *bond) {
     return result / bond->c_freq;
 }
 
-double flat_curve_dr(const Bond *bond) {
-    return 1.0 / (1.0 + pow(bond->ytm/bond->c_rate, bond->c_rate*bond->c_freq));
+double ytm(const Bond *bond) {
+    Money pval(bond->pval);
+    Money cval(bond->cval);
+    std::cout << bond->pval << ", " << bond->cval << std::endl;
+    std::cout << pval << ", " << cval << std::endl;
+    return 0.0;
 }
+
+double flat_curve_dr(const Bond *bond) {
+    double yieldtm = ytm(bond);
+    return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
+}
+
+

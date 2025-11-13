@@ -14,17 +14,19 @@
  *  - c_rate: Coupon Rate / Annual Percentage
  *  - c_freq: Coupon frequency, 0 = annual, 1 = semiannual, 2 = quarterly
  *  - ttm: Time to Maturity in years
- *  - ytm: Yield to Maturity / Annual Yield
+ *  - cval: Current value 
  */
 typedef struct {
-    double pval;
+    std::string pval;
     double c_rate;
     int c_freq;
     int ttm;
-    double ytm;
+    std::string cval;
 } Bond;
 
 // Calculates the periodic coupon payment using our Bond as an input
 Money pcp(const Bond *bond);
 
 double flat_curve_dr(const Bond *bond);
+
+double ytm(const Bond *bond); 

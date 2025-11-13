@@ -16,6 +16,7 @@ class Money {
         Money(const Money &other);
         Money(const Money &&other);
         Money(long long _units);
+        Money(std::string _units);
         ~Money();
         
         void mult_per(double per);

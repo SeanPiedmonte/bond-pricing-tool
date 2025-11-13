@@ -13,11 +13,11 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> args(argv, argv+argc);
     Bond bond;
     try {
-        bond.pval = std::stod(args.at(1));
+        bond.pval = args.at(1);
         bond.c_rate = std::stod(args.at(2)) / 100.0; 
         bond.c_freq = std::stoi(args.at(3));
         bond.ttm = std::stoi(args.at(4));
-        bond.ytm = std::stod(args.at(5)) / 100.0;
+        bond.cval = args.at(5);
     } catch (const std::invalid_argument& e) {
         std::cerr << "Invalid Number in arguments" << std::endl;
     }
