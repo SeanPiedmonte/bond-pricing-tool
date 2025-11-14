@@ -98,7 +98,6 @@ class Money {
             }
             
             while (other.units <= rem) {
-                std::cout << other.units << ", " << rem << std::endl;
                 rem -= other.units;
                 quo++;
             }

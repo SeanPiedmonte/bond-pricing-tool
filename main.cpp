@@ -24,5 +24,4 @@ int main(int argc, char *argv[]) {
     
     Money money = pcp(&bond);
     double dr = flat_curve_dr(&bond);
-    std::cout << money << ", " << dr << std::endl;
 }
