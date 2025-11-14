@@ -15,6 +15,11 @@ double nrm(long long fv, long long cv, double r, long long ppp) {
     long long derv_f = (ppp*((1/std::pow(1+r,20))+((20*r)/std::pow(1+r,21))-1)/(r*r)) -
                        ((20*fv)/std::pow(r+1,21));
     double r2 = r - double(final-cv)/derv_f;
+    long long comp = fv/std::pow(r2+1, 20) + ppp * ((1 - 1/std::pow(r2+1, 20))/r2);
+    
+    if (std::abs(comp - cv) > 10000) {
+        return nrm(fv, cv, r2, ppp);
+    } 
     return r2;
 }
 
@@ -22,8 +27,7 @@ double ytm(const Bond *bond) {
     Money pval(bond->pval);
     Money cval(bond->cval);
     long long c_pay = pval.get_units() * bond->c_rate / bond->c_freq;
-    long long dividend = c_pay + ((pval-cval).get_units()/(bond->c_rate*bond->c_freq));
-    std::cout << dividend << std::endl;
+    double nrm_val = nrm(pval.get_units(), cval.get_units(), 0.05, c_pay);
     return 0.0;
 }
 
