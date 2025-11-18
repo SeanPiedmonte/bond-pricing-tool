@@ -31,6 +31,10 @@ double ytm(const Bond *bond) {
     return 0.0;
 }
 
+double disc_fact(double ytm, int ppy, int years) {
+    return (1.0 / std::pow(1+(ytm/ppy), ppy*years));
+}
+
 double flat_curve_dr(const Bond *bond) {
     double yieldtm = ytm(bond);
     return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
