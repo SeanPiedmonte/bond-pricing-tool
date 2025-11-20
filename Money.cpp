@@ -35,14 +35,6 @@ void Money::div_per(double per) {
     units = units / per;
 }
 
-void Money::set_units(long long u) {
-    units = u;
-}
-
-long long Money::get_units() {
-    return units;
-}
-
 std::ostream& operator<<(std::ostream& out, const Money& money) {
     out << money.units;
     return out;    

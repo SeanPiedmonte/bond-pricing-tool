@@ -26,8 +26,8 @@ double nrm(long long fv, long long cv, double r, long long ppp) {
 double ytm(const Bond *bond) {
     Money pval(bond->pval);
     Money cval(bond->cval);
-    long long c_pay = pval.get_units() * bond->c_rate / bond->c_freq;
-    double nrm_val = nrm(pval.get_units(), cval.get_units(), 0.05, c_pay);
+    long long c_pay = pval.units * bond->c_rate / bond->c_freq;
+    double nrm_val = nrm(pval.units, cval.units, 0.05, c_pay);
     return nrm_val;
 }
 
@@ -41,4 +41,12 @@ double flat_curve_dr(const Bond *bond) {
     return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
 }
 
-
+Money present_value(const Bond *bond) {
+    Money pval(bond->pval);
+    Money cval(bond->cval);
+    
+    Money pres_val(0);
+    for (int i = 1; i <= bond->ttm * bond->c_freq; i++) {
+    }
+    return pres_val;
+}

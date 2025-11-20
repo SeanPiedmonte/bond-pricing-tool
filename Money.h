@@ -8,11 +8,11 @@
 class Money {
     private:
         // 6 decimals of precision units. E.g: 12.45 = 12450000
-        long long units;
 
         void swap(Money other);
 
     public:
+        long long units;
         Money(const Money &other);
         Money(const Money &&other);
         Money(long long _units);
@@ -21,8 +21,6 @@ class Money {
         
         void mult_per(double per);
         void div_per(double per);
-        void set_units(long long units);
-        long long get_units();
 
         Money& operator=(const Money &other) {
             if (&other != this) {
