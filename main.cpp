@@ -24,6 +24,11 @@ int main(int argc, char *argv[]) {
     }
     
     Money money = pcp(&bond);
+    std::cout << "Money: " << money << std::endl;
     double yield = ytm(&bond);
+    std::cout << "Yield to maturity: " << yield << std::endl;
     double df = disc_fact(yield, bond.c_freq, bond.ttm);
+    std::cout << "Discount Factor: " << df << std::endl;
+    Money pres_val = present_value(&bond);
+    std::cout << "Present Value: " << pres_val << std::endl;
 }

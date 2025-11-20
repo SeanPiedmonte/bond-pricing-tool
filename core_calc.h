@@ -32,5 +32,3 @@ double flat_curve_dr(const Bond *bond);
 double ytm(const Bond *bond); 
 
 double disc_fact(double ytm, int ppy, int years);
-
-Money present_value(const Bond *bond);
