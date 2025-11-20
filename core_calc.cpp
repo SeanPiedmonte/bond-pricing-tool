@@ -28,11 +28,12 @@ double ytm(const Bond *bond) {
     Money cval(bond->cval);
     long long c_pay = pval.get_units() * bond->c_rate / bond->c_freq;
     double nrm_val = nrm(pval.get_units(), cval.get_units(), 0.05, c_pay);
-    return 0.0;
+    return nrm_val;
 }
 
-double disc_fact(double ytm, int ppy, int years) {
-    return (1.0 / std::pow(1+(ytm/ppy), ppy*years));
+double disc_fact(double ytm, int c_freq, int years) {
+    int ppy = c_freq * years;
+    return (1.0 / std::pow(1+(ytm/c_freq), ppy));
 }
 
 double flat_curve_dr(const Bond *bond) {

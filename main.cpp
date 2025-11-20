@@ -1,6 +1,7 @@
 #include <iostream>
 #include <cassert>
 #include <vector>
+#include <cmath>
 #include "core_calc.h"
 #include "Money.h"
   
@@ -23,5 +24,6 @@ int main(int argc, char *argv[]) {
     }
     
     Money money = pcp(&bond);
-    double dr = flat_curve_dr(&bond);
+    double yield = ytm(&bond);
+    double df = disc_fact(yield, bond.c_freq, bond.ttm);
 }
