@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cassert>
 #include <vector>
 #include <cmath>
@@ -6,29 +7,28 @@
 #include "Money.h"
   
 int main(int argc, char *argv[]) {
-    if (argc != 6) {
+    if (argc != 2) {
         std::cerr << "Invalid Number of arguments" << std::endl;
         return 1;
     }
     
-    std::vector<std::string> args(argv, argv+argc);
-    Bond bond;
-    try {
-        bond.pval = args.at(1);
-        bond.c_rate = std::stod(args.at(2)) / 100.0; 
-        bond.c_freq = std::stoi(args.at(3));
-        bond.ttm = std::stoi(args.at(4));
-        bond.cval = args.at(5);
-    } catch (const std::invalid_argument& e) {
-        std::cerr << "Invalid Number in arguments" << std::endl;
+    std::ifstream file(argv[1]);
+    if (!file) {
+        std::cerr << "Cannot open file.\n";
+        return 1;
     }
+
+    std::vector<Bond> bonds(0);
     
-    Money money = pcp(&bond);
-    std::cout << "Money: " << money << std::endl;
-    double yield = ytm(&bond);
-    std::cout << "Yield to maturity: " << yield << std::endl;
-    double df = disc_fact(yield, bond.c_freq, bond.ttm);
-    std::cout << "Discount Factor: " << df << std::endl;
-    Money pres_val = present_value(&bond);
-    std::cout << "Present Value: " << pres_val << std::endl;
+    Bond b;
+    int i = 0;
+    while (file >> b) {
+        bonds.push_back(b);
+        i++;
+    }
+
+    for (Bond elem : bonds) {
+        std::cout << elem << std::endl;
+    }
+    file.close();
 }

@@ -41,3 +41,44 @@ double flat_curve_dr(const Bond *bond) {
     return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
 }
 
+std::istream &operator>>(std::istream &stream, Bond &b) {
+    char pval[50];
+    char cval[50];
+    char c_rate[50];
+    char c_freq[50];
+    char ttm[50];
+    
+    if (!stream.getline(pval, 50, ',')) {
+        b.pval = "0";
+    } else {
+        b.pval = pval;
+    }
+    if (!stream.getline(cval, 50, ',')) {
+        b.cval = "0";
+    } else {
+        b.cval = cval;
+    }
+    if (!stream.getline(c_rate, 50, ',')) {
+        b.c_rate = 0.0;
+    } else {
+        b.c_rate = std::atof(c_rate);
+    }
+    if (!stream.getline(ttm, 50, ',')) {
+        b.ttm = 0;
+    } else {
+        b.ttm= std::atoi(ttm);
+    }
+    if (!stream.getline(c_freq, 50, '\n')) {
+        b.c_freq = 0;
+    } else {
+        b.c_freq = std::atoi(c_freq);
+    }
+
+    return stream;
+}
+
+std::ostream &operator<<(std::ostream &stream, const Bond b) {
+    stream << b.pval << "," << b.cval << "," << b.c_rate<< "," << b.ttm << ","
+        << b.c_freq;
+    return stream;
+}

@@ -16,12 +16,15 @@
  *  - ttm: Time to Maturity in years
  *  - cval: Current value 
  */
-typedef struct {
+typedef struct Bond {
     std::string pval;
     double c_rate;
     int c_freq;
     int ttm;
     std::string cval;
+
+    friend std::istream &operator>>(std::istream &stream, Bond &b);
+    friend std::ostream &operator<<(std::ostream &stream, const Bond b);
 } Bond;
 
 // Calculates the periodic coupon payment using our Bond as an input
