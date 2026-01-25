@@ -1,4 +1,5 @@
 #include <iostream>
+#include <vector>
 #include <cmath>
 #include "core_calc.h"
 
@@ -24,6 +25,7 @@ double nrm(long long fv, long long cv, double r, long long ppp) {
 }
 
 // Yield to maturity
+// 0.05 is the initial guess that we pass to the nrm
 double ytm(const Bond *bond) {
     Money pval(bond->pval);
     Money cval(bond->cval);
@@ -79,6 +81,40 @@ std::istream &operator>>(std::istream &stream, Bond &b) {
     }
 
     return stream;
+}
+
+void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
+    char buffer[100];
+    for (Bond bond : bonds) {
+        double fval = std::stod(bond.pval);
+        stream << "Period | Cash Flow | Discount Factor | Present Value\n";
+        stream << "----------------------------------------------------\n";
+        Money cash_flow = pcp(&bond);
+        double flow = cash_flow.getDol();
+
+        double yield = ytm(&bond);
+        
+        double fut_val = 0.0, adj_val = 0.0;
+        double df;
+        for (int i=1; i < bond.ttm * bond.c_freq; i++) {
+            fut_val += flow;
+            df = disc_fact(yield, bond.c_freq, i);
+            adj_val += flow * df;
+            sprintf(buffer, "%-7d|%-11.2f|%-17f|%0.2f\n", i, flow, df, flow * df);
+            stream << buffer;
+        }
+
+        fut_val += flow + fval;
+        df = disc_fact(yield, bond.c_freq, bond.ttm * bond.c_freq);
+        adj_val += (flow + fval) * df;
+        sprintf(buffer, "%-7d|%-11.2f|%-17f|%0.2f\n", bond.ttm * bond.c_freq, flow+fval, 
+                df, (flow + fval) * df);
+        stream << buffer;
+        stream << "----------------------------------------------------\n";
+        stream << "Total Future Received Value: " << fut_val + fval << std::endl;
+        stream << "Total Adjusted Future Received Value: " 
+        << adj_val + (fval * df) << std::endl;
+    }
 }
 
 // Overloaded inserter operator to output a bond to a stream

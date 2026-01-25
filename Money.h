@@ -112,6 +112,8 @@ class Money {
 
         void show_units();
         
+        double getDol();
+
         friend std::ostream& operator<<(std::ostream& os, const Money& money);
 };
 

@@ -4,6 +4,7 @@
 * This header handles the core computational functionality for our bond
 * calculator.
 */
+#include <vector>
 #include "Money.h"
 
 /*
@@ -44,3 +45,5 @@ double flat_curve_dr(const Bond *bond);
 double ytm(const Bond *bond); 
 
 double disc_fact(double ytm, int ppy, int years);
+
+void output_table(std::ostream &stream, std::vector<Bond> bonds);

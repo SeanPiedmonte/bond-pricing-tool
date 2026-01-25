@@ -12,9 +12,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     
-    std::ifstream file(argv[1]);
-    if (!file) {
+    std::ifstream in(argv[1]);
+    if (!in) {
         std::cerr << "Cannot open file.\n";
+        return 1;
+    }
+
+    std::ofstream out("out.txt");
+    if (!out) {
+        std::cerr << "Cannot open output file.\n";
         return 1;
     }
 
@@ -22,30 +28,13 @@ int main(int argc, char *argv[]) {
     
     Bond b;
     int i = 0;
-    while (file >> b) {
+    while (in >> b) {
         bonds.push_back(b);
         i++;
     }
-
-    for (Bond bond : bonds) {
-        Money pval(bond.pval);
-        Money cval(bond.cval);
-        std::cout << "Present Value: " << pval << std::endl;
-        std::cout << "Current Value: " << cval << std::endl;
-        std::cout << bond << std::endl;
-
-        Money money = pcp(&bond);
-        money.show_units();
-        std::cout << std::endl;
-        std::cout << "Money: " << money << std::endl;
-
-        double yield = ytm(&bond);
-        std::cout << "Yield to maturity: " << yield << std::endl;
-
-        double df = disc_fact(yield, bond.c_freq, bond.ttm);
-        std::cout << "Discount Factor: " << df << std::endl;
-    }
-
     
-    file.close();
+    output_table(out, bonds);
+    
+    in.close();
+    out.close();
 }
