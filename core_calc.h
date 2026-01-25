@@ -27,6 +27,15 @@ typedef struct Bond {
     friend std::ostream &operator<<(std::ostream &stream, const Bond b);
 } Bond;
 
+typedef struct OverTimeChart {
+    int period;
+    double cash_flow;
+    double disc_fact;
+    double pres_val;
+
+    friend std::ostream &operator<<(std::ostream &stream, const Bond b);
+} OverTimeChart;
+
 // Calculates the periodic coupon payment using our Bond as an input
 Money pcp(const Bond *bond);
 
