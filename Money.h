@@ -109,6 +109,8 @@ class Money {
             result.units = units / divisor;
             return result;
         }
+
+        void show_units();
         
         friend std::ostream& operator<<(std::ostream& os, const Money& money);
 };

@@ -22,6 +22,7 @@ Money::Money(std::string u)
     u.erase(0, u.find(delimeter) + delimeter.length());
     std::string cents = u;
     units = std::stoi(dollars) * 1000000 + std::stoi(cents) * 10000;
+    std::cout << "units: " << units << std::endl;
 }
 
 Money::~Money() {
@@ -35,7 +36,11 @@ void Money::div_per(double per) {
     units = units / per;
 }
 
+void Money::show_units() {
+    std::cout << this->units;
+}
+
 std::ostream& operator<<(std::ostream& out, const Money& money) {
-    out << money.units;
+    out << (double) (money.units / 1000000.0);
     return out;    
 }

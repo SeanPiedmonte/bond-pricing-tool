@@ -27,8 +27,25 @@ int main(int argc, char *argv[]) {
         i++;
     }
 
-    for (Bond elem : bonds) {
-        std::cout << elem << std::endl;
+    for (Bond bond : bonds) {
+        Money pval(bond.pval);
+        Money cval(bond.cval);
+        std::cout << "Present Value: " << pval << std::endl;
+        std::cout << "Current Value: " << cval << std::endl;
+        std::cout << bond << std::endl;
+
+        Money money = pcp(&bond);
+        money.show_units();
+        std::cout << std::endl;
+        std::cout << "Money: " << money << std::endl;
+
+        double yield = ytm(&bond);
+        std::cout << "Yield to maturity: " << yield << std::endl;
+
+        double df = disc_fact(yield, bond.c_freq, bond.ttm);
+        std::cout << "Discount Factor: " << df << std::endl;
     }
+
+    
     file.close();
 }

@@ -23,6 +23,7 @@ double nrm(long long fv, long long cv, double r, long long ppp) {
     return r2;
 }
 
+// Yield to maturity
 double ytm(const Bond *bond) {
     Money pval(bond->pval);
     Money cval(bond->cval);
@@ -31,16 +32,19 @@ double ytm(const Bond *bond) {
     return nrm_val * bond->c_freq;
 }
 
+// Discount Factor calculation
 double disc_fact(double ytm, int c_freq, int years) {
     int ppy = c_freq * years;
     return (1.0 / std::pow(1+(ytm/c_freq), ppy));
 }
 
+// Calculate discount rate when the interest rates vary little over time
 double flat_curve_dr(const Bond *bond) {
     double yieldtm = ytm(bond);
     return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
 }
 
+// Overload the extractor operator so that we can take in a bond from a file
 std::istream &operator>>(std::istream &stream, Bond &b) {
     char pval[50];
     char cval[50];
@@ -77,6 +81,7 @@ std::istream &operator>>(std::istream &stream, Bond &b) {
     return stream;
 }
 
+// Overloaded inserter operator to output a bond to a stream
 std::ostream &operator<<(std::ostream &stream, const Bond b) {
     stream << b.pval << "," << b.cval << "," << b.c_rate<< "," << b.ttm << ","
         << b.c_freq;
