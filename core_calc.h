@@ -48,3 +48,5 @@ double disc_fact(double ytm, int ppy, int years);
 
 void output_table(std::ostream &stream, std::vector<Bond> bonds);
 double macaulay_duration(Bond bond);
+double modified_duration(double mac_dur, double yield, int ppy);
+Money convexity(Bond bond, double dur);

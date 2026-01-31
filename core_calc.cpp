@@ -109,9 +109,12 @@ void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
         adj_val += (flow + fval) * df;
         sprintf(buffer, "%-7d|%-11.2f|%-17f|%0.2f\n", bond.ttm * bond.c_freq, flow+fval, 
                 df, (flow + fval) * df);
+        double mac_dur = macaulay_duration(bond);
         stream << buffer;
         stream << "----------------------------------------------------\n";
-        stream << "Macaulay Duration: " << macaulay_duration(bond) << std::endl;
+        stream << "Macaulay Duration: " << mac_dur << "%" << std::endl;
+        stream << "Modified Duration: " << modified_duration(mac_dur, yield, bond.c_freq) 
+            << "%" << std::endl;
         stream << "Total Future Received Value: " << fut_val + fval << std::endl;
         stream << "Total Adjusted Future Received Value: " 
         << adj_val + (fval * df) << std::endl;
@@ -138,9 +141,19 @@ double macaulay_duration(Bond bond) {
         df = disc_fact(bond.c_rate/bond.c_freq, 1, i);
         sum = sum + (c_pay * i * df);
     }
-    return (double)(sum.units) / mat_val.units;
+    return (double)(sum.units) / mat_val.units / bond.c_freq;
 }
 
+// Adjusted version of Macaulay's
+// ppy is the periods per year
+double modified_duration(double m_dur, double ytm, int ppy) {
+    return m_dur / (1 + ytm/ppy);
+}
+
+Money convexity(Bond bond, double dur) {
+    Money mon;
+    return mon;
+}
 
 // Overloaded inserter operator to output a bond to a stream
 std::ostream &operator<<(std::ostream &stream, const Bond b) {
