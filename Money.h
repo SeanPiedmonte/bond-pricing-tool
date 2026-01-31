@@ -13,6 +13,7 @@ class Money {
 
     public:
         long long units;
+        Money();
         Money(const Money &other);
         Money(const Money &&other);
         Money(long long _units);
@@ -81,6 +82,10 @@ class Money {
             return result;
         }
 
+        Money operator*(double other) const {
+            return units * other;
+        }
+
         Money operator/(const Money &other) const {
             Money result(0);
             long long rem = units;
@@ -109,7 +114,7 @@ class Money {
             result.units = units / divisor;
             return result;
         }
-
+         
         void show_units();
         
         double getDol();

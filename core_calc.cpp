@@ -111,11 +111,36 @@ void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
                 df, (flow + fval) * df);
         stream << buffer;
         stream << "----------------------------------------------------\n";
+        stream << "Macaulay Duration: " << macaulay_duration(bond) << std::endl;
         stream << "Total Future Received Value: " << fut_val + fval << std::endl;
         stream << "Total Adjusted Future Received Value: " 
         << adj_val + (fval * df) << std::endl;
     }
 }
+
+/*
+* c_pay: periodic coupon payment
+* yield: periodic yield
+* mat_val: value of bond at maturity
+* n: bond length
+* curr_price: current bond price
+*/
+double macaulay_duration(Bond bond) {
+    double df;
+    Money mat_val(bond.pval);
+    Money c_pay = mat_val * (bond.c_rate/bond.c_freq);
+    Money curr_price(bond.cval);
+    Money sum;
+    for (int i = 1; i <= bond.ttm*bond.c_freq; i++) {
+        if (i == bond.ttm*bond.c_freq) {
+            c_pay = c_pay + mat_val;
+        }
+        df = disc_fact(bond.c_rate/bond.c_freq, 1, i);
+        sum = sum + (c_pay * i * df);
+    }
+    return (double)(sum.units) / mat_val.units;
+}
+
 
 // Overloaded inserter operator to output a bond to a stream
 std::ostream &operator<<(std::ostream &stream, const Bond b) {
@@ -123,3 +148,4 @@ std::ostream &operator<<(std::ostream &stream, const Bond b) {
         << b.c_freq;
     return stream;
 }
+

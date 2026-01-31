@@ -47,3 +47,4 @@ double ytm(const Bond *bond);
 double disc_fact(double ytm, int ppy, int years);
 
 void output_table(std::ostream &stream, std::vector<Bond> bonds);
+double macaulay_duration(Bond bond);

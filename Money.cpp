@@ -1,5 +1,8 @@
 #include "Money.h"
 
+Money::Money() : units{0} {
+}
+
 Money::Money(const Money &money) 
     : units{ money.units }
 {
