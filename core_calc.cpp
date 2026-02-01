@@ -151,8 +151,22 @@ double modified_duration(double m_dur, double ytm, int ppy) {
 }
 
 Money convexity(Bond bond, double dur) {
-    Money mon;
-    return mon;
+    Money curr_price(bond.cval);
+    Money mat_val(bond.pval);
+    Money coup_val = mat_val * bond.c_rate;
+    double non_sum_term = 1.0 / (curr_price.getDol() * std::pow(1.0 + bond.c_rate, 2));
+    Money sum;
+    for (int i = 1; i <= bond.ttm; i++) {
+        if (i == bond.ttm) {
+            std::cout << (coup_val+ mat_val).getDol() << std::endl;
+            coup_val = (coup_val.units + mat_val.units)/std::pow(1.0+bond.c_rate,i);
+        }
+        sum = sum + (coup_val.units/std::pow(1.0+bond.c_rate,i) / std::pow(1+bond.c_rate,i))*(i*i + i);
+    }
+    std::cout << sum << std::endl;
+    std::cout.setf(std::ios::fixed);
+    std::cout << sum * non_sum_term << std::endl;
+    return sum * non_sum_term;
 }
 
 // Overloaded inserter operator to output a bond to a stream
