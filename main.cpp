@@ -33,9 +33,12 @@ int main(int argc, char *argv[]) {
         i++;
     }
     
+    
     output_table(out, bonds);
     double mac_dur = macaulay_duration(bonds.at(0));
     convexity(bonds.at(0), mac_dur);
     in.close();
     out.close();
+
+    std::cout << "Output to: out.txt" << std::endl; 
 }

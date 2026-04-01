@@ -40,47 +40,60 @@ double disc_fact(double ytm, int c_freq, int years) {
     return (1.0 / std::pow(1+(ytm/c_freq), ppy));
 }
 
+/*
+* c_pay: periodic coupon payment
+* yield: periodic yield
+* mat_val: value of bond at maturity
+* n: bond length
+* curr_price: current bond price
+*/
+double macaulay_duration(Bond bond) {
+    double df;
+    Money mat_val(bond.pval);
+    Money c_pay = mat_val * (bond.c_rate/bond.c_freq);
+    Money curr_price(bond.cval);
+    Money sum;
+    for (int i = 1; i <= bond.ttm*bond.c_freq; i++) {
+        if (i == bond.ttm*bond.c_freq) {
+            c_pay = c_pay + mat_val;
+        }
+        df = disc_fact(bond.c_rate/bond.c_freq, 1, i);
+        sum = sum + (c_pay * i * df);
+    }
+    return (double)(sum.units) / mat_val.units / bond.c_freq;
+}
+
 // Calculate discount rate when the interest rates vary little over time
 double flat_curve_dr(const Bond *bond) {
     double yieldtm = ytm(bond);
     return 1.0 / (1.0 + pow(yieldtm/bond->c_rate, bond->c_rate*bond->c_freq));
 }
 
-// Overload the extractor operator so that we can take in a bond from a file
-std::istream &operator>>(std::istream &stream, Bond &b) {
-    char pval[50];
-    char cval[50];
-    char c_rate[50];
-    char c_freq[50];
-    char ttm[50];
-    
-    if (!stream.getline(pval, 50, ',')) {
-        b.pval = "0";
-    } else {
-        b.pval = pval;
-    }
-    if (!stream.getline(cval, 50, ',')) {
-        b.cval = "0";
-    } else {
-        b.cval = cval;
-    }
-    if (!stream.getline(c_rate, 50, ',')) {
-        b.c_rate = 0.0;
-    } else {
-        b.c_rate = std::atof(c_rate);
-    }
-    if (!stream.getline(ttm, 50, ',')) {
-        b.ttm = 0;
-    } else {
-        b.ttm= std::atoi(ttm);
-    }
-    if (!stream.getline(c_freq, 50, '\n')) {
-        b.c_freq = 0;
-    } else {
-        b.c_freq = std::atoi(c_freq);
-    }
+// Adjusted version of Macaulay's
+// ppy is the periods per year
+double modified_duration(double m_dur, double ytm, int ppy) {
+    return m_dur / (1 + ytm/ppy);
+}
 
-    return stream;
+Money convexity(Bond bond, double dur) {
+    Money curr_price(bond.cval);
+    Money mat_val(bond.pval);
+    Money coup_val = mat_val * bond.c_rate;
+    double non_sum_term = 1.0 / (curr_price.getDol() * std::pow(1.0 + bond.c_rate, 2));
+    Money sum;
+    for (int i = 1; i <= bond.ttm; i++) {
+        if (i == bond.ttm) {
+            coup_val = (coup_val.units + mat_val.units)/std::pow(1.0+bond.c_rate,i);
+        }
+        sum = sum + (coup_val.units/std::pow(1.0+bond.c_rate,i) / std::pow(1+bond.c_rate,i))*(i*i + i);
+    }
+    return sum * non_sum_term;
+}
+
+// Need to use the Discount Factor calculated with Present Value / Face Value
+// Then rearrange the following formula: DF = 1 / (1 + r)^t 
+double calc_spot_rate(Bond bond) {
+    return 0.0;
 }
 
 void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
@@ -121,54 +134,6 @@ void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
     }
 }
 
-/*
-* c_pay: periodic coupon payment
-* yield: periodic yield
-* mat_val: value of bond at maturity
-* n: bond length
-* curr_price: current bond price
-*/
-double macaulay_duration(Bond bond) {
-    double df;
-    Money mat_val(bond.pval);
-    Money c_pay = mat_val * (bond.c_rate/bond.c_freq);
-    Money curr_price(bond.cval);
-    Money sum;
-    for (int i = 1; i <= bond.ttm*bond.c_freq; i++) {
-        if (i == bond.ttm*bond.c_freq) {
-            c_pay = c_pay + mat_val;
-        }
-        df = disc_fact(bond.c_rate/bond.c_freq, 1, i);
-        sum = sum + (c_pay * i * df);
-    }
-    return (double)(sum.units) / mat_val.units / bond.c_freq;
-}
-
-// Adjusted version of Macaulay's
-// ppy is the periods per year
-double modified_duration(double m_dur, double ytm, int ppy) {
-    return m_dur / (1 + ytm/ppy);
-}
-
-Money convexity(Bond bond, double dur) {
-    Money curr_price(bond.cval);
-    Money mat_val(bond.pval);
-    Money coup_val = mat_val * bond.c_rate;
-    double non_sum_term = 1.0 / (curr_price.getDol() * std::pow(1.0 + bond.c_rate, 2));
-    Money sum;
-    for (int i = 1; i <= bond.ttm; i++) {
-        if (i == bond.ttm) {
-            std::cout << (coup_val+ mat_val).getDol() << std::endl;
-            coup_val = (coup_val.units + mat_val.units)/std::pow(1.0+bond.c_rate,i);
-        }
-        sum = sum + (coup_val.units/std::pow(1.0+bond.c_rate,i) / std::pow(1+bond.c_rate,i))*(i*i + i);
-    }
-    std::cout << sum << std::endl;
-    std::cout.setf(std::ios::fixed);
-    std::cout << sum * non_sum_term << std::endl;
-    return sum * non_sum_term;
-}
-
 // Overloaded inserter operator to output a bond to a stream
 std::ostream &operator<<(std::ostream &stream, const Bond b) {
     stream << b.pval << "," << b.cval << "," << b.c_rate<< "," << b.ttm << ","
@@ -176,3 +141,39 @@ std::ostream &operator<<(std::ostream &stream, const Bond b) {
     return stream;
 }
 
+// Overload the extractor operator so that we can take in a bond from a file
+std::istream &operator>>(std::istream &stream, Bond &b) {
+    char pval[50];
+    char cval[50];
+    char c_rate[50];
+    char c_freq[50];
+    char ttm[50];
+    
+    if (!stream.getline(pval, 50, ',')) {
+        b.pval = "0";
+    } else {
+        b.pval = pval;
+    }
+    if (!stream.getline(cval, 50, ',')) {
+        b.cval = "0";
+    } else {
+        b.cval = cval;
+    }
+    if (!stream.getline(c_rate, 50, ',')) {
+        b.c_rate = 0.0;
+    } else {
+        b.c_rate = std::atof(c_rate);
+    }
+    if (!stream.getline(ttm, 50, ',')) {
+        b.ttm = 0;
+    } else {
+        b.ttm= std::atoi(ttm);
+    }
+    if (!stream.getline(c_freq, 50, '\n')) {
+        b.c_freq = 0;
+    } else {
+        b.c_freq = std::atoi(c_freq);
+    }
+
+    return stream;
+}
