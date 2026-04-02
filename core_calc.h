@@ -18,24 +18,32 @@
  *  - cval: Current value 
  */
 typedef struct Bond {
-    std::string pval;
     double c_rate;
     int c_freq;
     int ttm;
+    std::string pval;
     std::string cval;
 
     friend std::istream &operator>>(std::istream &stream, Bond &b);
     friend std::ostream &operator<<(std::ostream &stream, const Bond b);
 } Bond;
 
+// Allows for printing of values for display
 typedef struct OverTimeChart {
-    int period;
     double cash_flow;
     double disc_fact;
     double pres_val;
+    int period;
 
     friend std::ostream &operator<<(std::ostream &stream, const Bond b);
 } OverTimeChart;
+
+typedef struct YieldCurveOutput {
+    double rate;
+    int period;
+    Money calc_val;
+    Money cash_flow; 
+} YieldCurveOutput;
 
 // Calculates the periodic coupon payment using our Bond as an input
 Money pcp(const Bond *bond);

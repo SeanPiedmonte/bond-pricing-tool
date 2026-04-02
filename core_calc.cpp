@@ -90,10 +90,30 @@ Money convexity(Bond bond, double dur) {
     return sum * non_sum_term;
 }
 
-// Need to use the Discount Factor calculated with Present Value / Face Value
-// Then rearrange the following formula: DF = 1 / (1 + r)^t 
-double calc_spot_rate(Bond bond) {
-    return 0.0;
+double *interpolate_rates(const double rates[], int n) {
+    double *int_rates = new double[n];
+     
+    return int_rates;
+}
+
+// Calculate a discount factor based on a given yield curve
+YieldCurveOutput *curve_based_pricing(const double rates[], Bond *bond) {
+    double *int_rates = interpolate_rates(rates, bond->ttm*bond->c_freq);
+    int n = bond->ttm * bond->c_freq;
+    YieldCurveOutput *yco = new YieldCurveOutput[n];
+    Money coup_pay = pcp(bond);
+    Money total = Money(0);
+    for (int t = 0; t < n-1; t++) {
+        yco[t].cash_flow = coup_pay;
+        yco[t].rate = rates[t];
+        yco[t].calc_val = (coup_pay / std::pow(1+rates[t], t));
+    }
+    
+    yco[n-1].rate = rates[n-1];
+    yco[n-1].cash_flow = Money(bond->pval) + coup_pay;
+    yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1], n-1));
+    delete int_rates;
+    return yco;
 }
 
 void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
