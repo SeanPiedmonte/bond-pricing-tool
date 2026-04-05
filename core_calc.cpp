@@ -90,25 +90,45 @@ Money convexity(Bond bond, double dur) {
     return sum * non_sum_term;
 }
 
-double *interpolate_rates(const double rates[], int n) {
+const double *interpolate_rates(const double rates[], int num_rates, int n, int freq) {
     double *int_rates = new double[n];
-     
+    if (num_rates == n) {
+        return rates;
+    }
+    
+    double rate;
+    for (int i = 0; i < n; i++) {
+        if (i % freq == 0) {
+            int_rates[i] = rates[i];
+        } else {
+            rate = (rates[i] + rates[i+1])/freq;
+            int_rates[i] = rate;
+        }
+    }
+
     return int_rates;
 }
 
 // Calculate a discount factor based on a given yield curve
-YieldCurveOutput *curve_based_pricing(const double rates[], Bond *bond) {
-    double *int_rates = interpolate_rates(rates, bond->ttm*bond->c_freq);
+YieldCurveOutput *curve_based_pricing(const double rates[], int num_rates, Bond *bond) {
+    // We may not have enough rates to properly estimate across so we need to make estimates
+    const double *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
+    
+    // n is the number of periods 
     int n = bond->ttm * bond->c_freq;
+    // init some useful helper variables 
     YieldCurveOutput *yco = new YieldCurveOutput[n];
     Money coup_pay = pcp(bond);
     Money total = Money(0);
+
+    // calculate the cash flow for the curve
     for (int t = 0; t < n-1; t++) {
         yco[t].cash_flow = coup_pay;
         yco[t].rate = rates[t];
         yco[t].calc_val = (coup_pay / std::pow(1+rates[t], t));
     }
-    
+   
+    // Get the final calculation with the full face value payment
     yco[n-1].rate = rates[n-1];
     yco[n-1].cash_flow = Money(bond->pval) + coup_pay;
     yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1], n-1));
@@ -117,7 +137,8 @@ YieldCurveOutput *curve_based_pricing(const double rates[], Bond *bond) {
 }
 
 void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
-    char buffer[100];
+    int len = 100;
+    char buffer[len];
     for (Bond bond : bonds) {
         double fval = std::stod(bond.pval);
         stream << "Period | Cash Flow | Discount Factor | Present Value\n";
@@ -133,14 +154,14 @@ void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
             fut_val += flow;
             df = disc_fact(yield, bond.c_freq, i);
             adj_val += flow * df;
-            sprintf(buffer, "%-7d|%-11.2f|%-17f|%0.2f\n", i, flow, df, flow * df);
+            snprintf(buffer, len, "%-7d|%-11.2f|%-17f|%0.2f\n", i, flow, df, flow * df);
             stream << buffer;
         }
 
         fut_val += flow + fval;
         df = disc_fact(yield, bond.c_freq, bond.ttm * bond.c_freq);
         adj_val += (flow + fval) * df;
-        sprintf(buffer, "%-7d|%-11.2f|%-17f|%0.2f\n", bond.ttm * bond.c_freq, flow+fval, 
+        snprintf(buffer, len, "%-7d|%-11.2f|%-17f|%0.2f\n", bond.ttm * bond.c_freq, flow+fval, 
                 df, (flow + fval) * df);
         double mac_dur = macaulay_duration(bond);
         stream << buffer;

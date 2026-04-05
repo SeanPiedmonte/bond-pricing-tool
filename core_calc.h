@@ -45,6 +45,11 @@ typedef struct YieldCurveOutput {
     Money cash_flow; 
 } YieldCurveOutput;
 
+typedef struct Rate {
+    double rate;
+    int year;
+} Rate;
+
 // Calculates the periodic coupon payment using our Bond as an input
 Money pcp(const Bond *bond);
 
