@@ -90,19 +90,27 @@ Money convexity(Bond bond, double dur) {
     return sum * non_sum_term;
 }
 
-const double *interpolate_rates(const double rates[], int num_rates, int n, int freq) {
-    double *int_rates = new double[n];
+void mult_years_inter(Rate rates[], Rate rate1, Rate rate2, int start, int end) {
+}
+
+const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq) {
+    int i, r, j, diff; // r is the ptr to current rate in int_rates
+    Rate *int_rates = new Rate[n];
     if (num_rates == n) {
         return rates;
     }
     
     double rate;
-    for (int i = 0; i < n; i++) {
-        if (i % freq == 0) {
-            int_rates[i] = rates[i];
+    for (i = 0; i < num_rates-1; i++) {
+        int_rates[r] = rates[i];
+        diff = rates[i+1].year - rates[i].year;
+        if (diff > 1) {
+            mult_years_inter(int_rates, rates[i], rates[i+1], r, r + diff*freq);
         } else {
-            rate = (rates[i] + rates[i+1])/freq;
-            int_rates[i] = rate;
+            for (j=0; j < freq; j++) {
+                int_rates[r++].rate = rates[i+1].rate+rates[i].rate/freq;
+                int_rates[r++].year = r;
+            }
         }
     }
 
@@ -110,9 +118,9 @@ const double *interpolate_rates(const double rates[], int num_rates, int n, int 
 }
 
 // Calculate a discount factor based on a given yield curve
-YieldCurveOutput *curve_based_pricing(const double rates[], int num_rates, Bond *bond) {
+YieldCurveOutput *curve_based_pricing(const Rate rates[], int num_rates, Bond *bond) {
     // We may not have enough rates to properly estimate across so we need to make estimates
-    const double *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
+    const Rate *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
     
     // n is the number of periods 
     int n = bond->ttm * bond->c_freq;
@@ -124,14 +132,14 @@ YieldCurveOutput *curve_based_pricing(const double rates[], int num_rates, Bond 
     // calculate the cash flow for the curve
     for (int t = 0; t < n-1; t++) {
         yco[t].cash_flow = coup_pay;
-        yco[t].rate = rates[t];
-        yco[t].calc_val = (coup_pay / std::pow(1+rates[t], t));
+        yco[t].rate = rates[t].rate;
+        yco[t].calc_val = (coup_pay / std::pow(1+rates[t].rate, t));
     }
    
     // Get the final calculation with the full face value payment
-    yco[n-1].rate = rates[n-1];
+    yco[n-1].rate = rates[n-1].rate;
     yco[n-1].cash_flow = Money(bond->pval) + coup_pay;
-    yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1], n-1));
+    yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1].rate, n-1));
     delete int_rates;
     return yco;
 }
