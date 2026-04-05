@@ -7,7 +7,7 @@
 #include "Money.h"
   
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
+    /*if (argc != 2) {
         std::cerr << "Invalid Number of arguments" << std::endl;
         return 1;
     }
@@ -31,14 +31,29 @@ int main(int argc, char *argv[]) {
     while (in >> b) {
         bonds.push_back(b);
         i++;
+    }*/
+    
+    int num_rates = 5;
+    const Rate *rates = new Rate[]{
+        {.rate=1.0, .year=1},
+        {.rate=2.0, .year=2},
+        {.rate=3.0, .year=3},
+        {.rate=4.0, .year=4},
+        {.rate=5.0, .year=5}
+    };
+
+    int freq = 2;
+    int n = num_rates * freq;
+    const Rate *int_rates = interpolate_rates(rates, num_rates, n, freq);
+    for (int i = 0; i < n; i++) {
+        std::cout << int_rates[i].year << ": " << int_rates[i].rate << std::endl;
     }
-    
-    
-    output_table(out, bonds);
+
+    /*output_table(out, bonds);
     double mac_dur = macaulay_duration(bonds.at(0));
     convexity(bonds.at(0), mac_dur);
     in.close();
-    out.close();
+    out.close();*/
 
-    std::cout << "Output to: out.txt" << std::endl; 
+    //std::cout << "Output to: out.txt" << std::endl; 
 }
