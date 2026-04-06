@@ -95,6 +95,7 @@ void mult_years_inter(Rate rates[], Rate rate1, Rate rate2, int start, int end) 
 }
 
 const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq) {
+    std::cout << "num_rates: " << n << std::endl;
     int i, r=0, j, diff; // r is the ptr to current rate in int_rates
     if (num_rates == n) {
         return rates;
@@ -106,25 +107,19 @@ const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq
         return nullptr;
     }
     
-    double rate;
-    int_rates[r].year = 0;
-    int_rates[r++].rate = rates[0].rate/freq;
-    for (i = 0; i < num_rates-1; i++) {
-        int_rates[r].year = r;
-        int_rates[r++].rate = rates[i].rate;
-        diff = rates[i+1].year - rates[i].year;
+    for (i = 1; i <= num_rates; i++) {
+        diff = rates[i].year - rates[i-1].year;
         if (diff > 1) {
-//            mult_years_inter(int_rates, rates[i], rates[i+1], r, r + diff*freq);
+            //mult_years_inter(int_rates, rates[i], rates[i+1], r, r + diff*freq);
         } else {
             for (j=1; j < freq; j++) {
                 int_rates[r].year = r;
-                int_rates[r++].rate = (rates[i+1].rate+rates[i].rate)/freq;
+                int_rates[r++].rate = rates[i-1].rate+j*(rates[i].rate-rates[i-1].rate)/freq;
             }
         }
+        int_rates[r].year = r;
+        int_rates[r++].rate = rates[i].rate;
     }
-    int_rates[r].rate = rates[num_rates-1].rate;
-    int_rates[r].year = r;
-
     return int_rates;
 }
 

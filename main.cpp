@@ -35,6 +35,7 @@ int main(int argc, char *argv[]) {
     
     int num_rates = 5;
     const Rate *rates = new Rate[]{
+        {.rate=0.0, .year=0},
         {.rate=1.0, .year=1},
         {.rate=2.0, .year=2},
         {.rate=3.0, .year=3},
@@ -42,7 +43,7 @@ int main(int argc, char *argv[]) {
         {.rate=5.0, .year=5}
     };
 
-    int freq = 2;
+    int freq = 3;
     int n = num_rates * freq;
     const Rate *int_rates = interpolate_rates(rates, num_rates, n, freq);
     for (int i = 0; i < n; i++) {
