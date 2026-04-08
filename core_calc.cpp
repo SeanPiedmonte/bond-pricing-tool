@@ -103,7 +103,7 @@ double *fill_in_years(const Rate rates[], int years, int n) {
     return yearly_rates;
 }
 
-const double *interpolate_rates(const double rates[], int num_rates, int n, int freq) {
+const double *interpolate_rates(double rates[], int num_rates, int n, int freq) {
     int i, r=0, j, diff; // r is the ptr to current rate in int_rates
     
     std::cout << "num_rates: " << n << std::endl;
@@ -119,7 +119,9 @@ const double *interpolate_rates(const double rates[], int num_rates, int n, int 
     
     for (i = 1; i <= n/freq; i++) {
         if (rates[i] == 0.0) {
-            rates[i] = 
+            int j = i+1;
+            while (j < n && rates[j] == 0.0) j++;
+            rates[i] = rates[i-1] + (double(i-i-1)/(j-i-1))*(rates[j]-rates[i-1]);  
         }
 
         for (j=1; j < freq; j++) {
@@ -134,8 +136,11 @@ const double *interpolate_rates(const double rates[], int num_rates, int n, int 
 // Calculate a discount factor based on a given yield curve
 YieldCurveOutput *curve_based_pricing(const Rate rates[], int num_rates, Bond *bond) {
     // We may not have enough rates to properly estimate across so we need to make estimates
-    const Rate *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
-    
+    const double *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
+    if (int_rates == nullptr) {
+        return nullptr;
+    }
+
     // n is the number of periods 
     int n = bond->ttm * bond->c_freq;
     // init some useful helper variables 
