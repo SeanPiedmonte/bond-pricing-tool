@@ -64,5 +64,4 @@ double macaulay_duration(Bond bond);
 double modified_duration(double mac_dur, double yield, int ppy);
 Money convexity(Bond bond, double dur);
 double calc_spot_rate(Bond bond);
-void mult_years_inter(Rate rates[], Rate rate1, Rate rate2, int start, int end);
-const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq);
+const double *interpolate_rates(const Rate rates[], int num_rates, int n, int freq);
