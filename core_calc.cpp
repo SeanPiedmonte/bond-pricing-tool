@@ -90,11 +90,25 @@ Money convexity(Bond bond, double dur) {
     return sum * non_sum_term;
 }
 
-void mult_years_inter(Rate rates[], Rate rate1, Rate rate2, int start, int end) {
+void mult_years_inter(Rate rates[], Rate rate1, Rate rate2, int start, int end, int freq) {
+}
 
+double *fill_in_years(const Rate rates[], int years, int n) {
+    double *yearly_rates = new double[years];
+    if (yearly_rates == nullptr) {
+        return nullptr;
+    }
+
+    for (int i=0; i < n; i++) {
+        yearly_rates[rates[i].year] = rates[i].rate;
+    }
+
+    return yearly_rates;
 }
 
 const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq) {
+    // fix yearly rates if there are gaps between years
+    double *fixed_years_rates = fill_in_years(rates, n/freq, num_rates);
     std::cout << "num_rates: " << n << std::endl;
     int i, r=0, j, diff; // r is the ptr to current rate in int_rates
     if (num_rates == n) {
@@ -110,7 +124,7 @@ const Rate *interpolate_rates(const Rate rates[], int num_rates, int n, int freq
     for (i = 1; i <= num_rates; i++) {
         diff = rates[i].year - rates[i-1].year;
         if (diff > 1) {
-            //mult_years_inter(int_rates, rates[i], rates[i+1], r, r + diff*freq);
+            mult_years_inter(int_rates, rates[i], rates[i+1], rates[i-1].year, rates[i].year);
         } else {
             for (j=1; j < freq; j++) {
                 int_rates[r].year = r;
