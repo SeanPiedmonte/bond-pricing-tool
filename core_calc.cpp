@@ -104,7 +104,7 @@ double *fill_in_years(const Rate rates[], int years, int n) {
 }
 
 const double *interpolate_rates(double rates[], int num_rates, int n, int freq) {
-    int i, r=0, j, diff; // r is the ptr to current rate in int_rates
+    int i, r=0, j; // r is the ptr to current rate in int_rates
     
     std::cout << "num_rates: " << n << std::endl;
     if (num_rates == n) {
@@ -134,7 +134,7 @@ const double *interpolate_rates(double rates[], int num_rates, int n, int freq) 
 }
 
 // Calculate a discount factor based on a given yield curve
-YieldCurveOutput *curve_based_pricing(const Rate rates[], int num_rates, Bond *bond) {
+YieldCurveOutput *curve_based_pricing(double rates[], int num_rates, Bond *bond) {
     // We may not have enough rates to properly estimate across so we need to make estimates
     const double *int_rates = interpolate_rates(rates, num_rates, bond->ttm*bond->c_freq, bond->c_freq);
     if (int_rates == nullptr) {
@@ -151,21 +151,21 @@ YieldCurveOutput *curve_based_pricing(const Rate rates[], int num_rates, Bond *b
     // calculate the cash flow for the curve
     for (int t = 0; t < n-1; t++) {
         yco[t].cash_flow = coup_pay;
-        yco[t].rate = rates[t].rate;
-        yco[t].calc_val = (coup_pay / std::pow(1+rates[t].rate, t));
+        yco[t].rate = rates[t];
+        yco[t].calc_val = (coup_pay / std::pow(1+rates[t], t));
     }
    
     // Get the final calculation with the full face value payment
-    yco[n-1].rate = rates[n-1].rate;
+    yco[n-1].rate = rates[n-1];
     yco[n-1].cash_flow = Money(bond->pval) + coup_pay;
-    yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1].rate, n-1));
+    yco[n-1].calc_val = ((Money(bond->pval) + coup_pay) / std::pow(1+rates[n-1], n-1));
     delete int_rates;
     return yco;
 }
 
 void output_table(std::ostream &stream, const std::vector<Bond> bonds) {
     int len = 100;
-    char buffer[len];
+    char buffer[100];
     for (Bond bond : bonds) {
         double fval = std::stod(bond.pval);
         stream << "Period | Cash Flow | Discount Factor | Present Value\n";

@@ -64,4 +64,5 @@ double macaulay_duration(Bond bond);
 double modified_duration(double mac_dur, double yield, int ppy);
 Money convexity(Bond bond, double dur);
 double calc_spot_rate(Bond bond);
-const double *interpolate_rates(const Rate rates[], int num_rates, int n, int freq);
+YieldCurveOutput *curve_based_pricing(double rates[], int num_rates, Bond *bond);
+const double *interpolate_rates(double rates[], int num_rates, int n, int freq);

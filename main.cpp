@@ -34,20 +34,20 @@ int main(int argc, char *argv[]) {
     }*/
     
     int num_rates = 5;
-    const Rate *rates = new Rate[]{
-        {.rate=0.0, .year=0},
-        {.rate=1.0, .year=1},
-        {.rate=2.0, .year=2},
-        {.rate=3.0, .year=3},
-        {.rate=4.0, .year=4},
-        {.rate=5.0, .year=5}
+    double *rates = new double[]{
+        0.0, 
+        1.0,
+        2.0,
+        3.0,
+        4.0, 
+        5.0,
     };
 
     int freq = 3;
     int n = num_rates * freq;
-    const Rate *int_rates = interpolate_rates(rates, num_rates, n, freq);
+    const double *int_rates = interpolate_rates(rates, num_rates, n, freq);
     for (int i = 0; i < n; i++) {
-        std::cout << int_rates[i].year << ": " << int_rates[i].rate << std::endl;
+        std::cout << int_rates[i] << ": " << int_rates[i] << std::endl;
     }
 
     /*output_table(out, bonds);
