@@ -33,13 +33,17 @@ int main(int argc, char *argv[]) {
         i++;
     }*/
     
-    int num_rates = 5;
+    int num_rates = 10;
     double *rates = new double[]{
         0.0, 
         1.0,
+        0.0, // 1.33
+        0.0, // 1.66
         2.0,
         3.0,
-        4.0, 
+        0.0, // 3.5
+        4.0,
+        0.0, // 4.5
         5.0,
     };
 

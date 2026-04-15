@@ -90,16 +90,8 @@ Money convexity(Bond bond, double dur) {
     return sum * non_sum_term;
 }
 
-double *fill_in_years(const Rate rates[], int years, int n) {
+double *fill_in_years(const double rates[], int arr_years[], int years, int n) {
     double *yearly_rates = new double[years];
-    if (yearly_rates == nullptr) {
-        return nullptr;
-    }
-
-    for (int i=0; i < n; i++) {
-        yearly_rates[rates[i].year] = rates[i].rate;
-    }
-
     return yearly_rates;
 }
 
@@ -117,10 +109,12 @@ const double *interpolate_rates(double rates[], int num_rates, int n, int freq) 
         return nullptr;
     }
     
-    for (i = 1; i <= n/freq; i++) {
+    for (i = 1; i <= num_rates/*n/freq*/; i++) {
         if (rates[i] == 0.0) {
             int j = i+1;
-            while (j < n && rates[j] == 0.0) j++;
+            while (j < n && rates[j] == 0.0) {
+                j++;
+            }
             rates[i] = rates[i-1] + (double(i-i-1)/(j-i-1))*(rates[j]-rates[i-1]);  
         }
 
