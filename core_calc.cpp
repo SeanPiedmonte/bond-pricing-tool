@@ -98,26 +98,30 @@ double *fill_in_years(const double rates[], int arr_years[], int years, int n) {
 const double *interpolate_rates(double rates[], int num_rates, int n, int freq) {
     int i, r=0, j; // r is the ptr to current rate in int_rates
     
-    std::cout << "num_rates: " << n << std::endl;
     if (num_rates == n) {
         return rates;
     }
 
-    double *int_rates = new double[n]{};
+    double *int_rates = new double[n-2]{};
     if (int_rates == nullptr) {
         std::cerr << "Unable to create the int_rates" << std::endl;
         return nullptr;
     }
     
-    for (i = 1; i <= num_rates/*n/freq*/; i++) {
+    int_rates[r++] = rates[0];
+    for (i = 1; i <= num_rates && r < n-2; i++) {
         if (rates[i] == 0.0) {
+            
+            /*std::cout << "rates is 0 for i: " << i << std::endl;*/
             int j = i+1;
             while (j < n && rates[j] == 0.0) {
                 j++;
             }
-            rates[i] = rates[i-1] + (double(i-i-1)/(j-i-1))*(rates[j]-rates[i-1]);  
+            
+            double diff = (rates[j] - rates[i-1]) / (j - (i-1));
+            rates[i] = rates[i-1] + diff;
         }
-
+        
         for (j=1; j < freq; j++) {
             int_rates[r++] = rates[i-1]+j*(rates[i]-rates[i-1])/freq;
         }

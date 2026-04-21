@@ -50,8 +50,8 @@ int main(int argc, char *argv[]) {
     int freq = 3;
     int n = num_rates * freq;
     const double *int_rates = interpolate_rates(rates, num_rates, n, freq);
-    for (int i = 0; i < n; i++) {
-        std::cout << int_rates[i] << ": " << int_rates[i] << std::endl;
+    for (int i = 0; i < n-2; i++) {
+        std::cout << i/freq << ": " << int_rates[i] << std::endl;
     }
 
     /*output_table(out, bonds);
